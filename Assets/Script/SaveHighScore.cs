@@ -33,7 +33,7 @@ public class SaveHighScore : MonoBehaviour
     }
     public int getScore()
     {
-       return PlayerPrefs.GetInt(scoreKey, 0);
+        return PlayerPrefs.GetInt(scoreKey, 0);
     }
     public void UpdateHighScore()
     {

@@ -22,7 +22,9 @@ public class ObstacleHandler : MonoBehaviour
                 // Find the last obstacle in front of the player
                 Transform lastObstacle = FindLastObstacle();
 
-                int range = Random.Range(35, 45);                      //range of recycled obstacle to appear the distance from last obstacle.
+                //range of recycled obstacle to appear the distance from last obstacle.
+                int range = Random.Range(35, 45);
+
                 // Calculate the new position for the recycled obstacle
                 float obstacleWidth = obstacle.GetComponent<Renderer>().bounds.size.x;
                 Vector3 newPosition = new Vector3(lastObstacle.position.x + obstacleWidth + range, obstacle.position.y, obstacle.position.z);

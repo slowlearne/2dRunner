@@ -2,40 +2,40 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("GameManager")]
     public GameManager gameManagerObj;
+
+    [Header("Player Settings")]
     public float playerInitialSpeed = 5f;
-
-    // The rate at which the player speed increases over time 
-    public float playerAcceleration = 0.5f;
-
-    // Current speed of the player
-    public float playerCurrentSpeed;
+    public float playerAcceleration = 0.5f;      // The rate at which the player speed increases over time   
+    public float playerCurrentSpeed;               // Current speed of the player
 
     public float gravity;
     public float groundHeight;
 
     public float acceleration;
     public float maxAcceleration;
-    public float distance;
-    public float maxSideVelocity;               //maximum speed player can reach
+    public float distance;                       //value that is travelled by player is displayed as score.
+    public float maxSideVelocity;               //maximum speed player can reach.
     public Vector2 velocity;
-    public float jumpVelocity;
-    
-    public bool isPlayerGrounded; 
-   
+    public float jumpVelocity;                     //Initial Jump force
+
+    public bool isPlayerGrounded;                   //to check if player is grounded.
+
     public bool isHoldingJump;
     public float maxTimeforJump;
     public float timerForJump;
 
+    [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip jumpSound, crashSound;
- 
+
     void Start()
     {
         playerCurrentSpeed = playerInitialSpeed;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)                        //to Detect player collision with obstacle
     {
         if (collision.gameObject.CompareTag("Obstacle"))
         {
@@ -43,60 +43,43 @@ public class PlayerController : MonoBehaviour
             gameManagerObj.gameOver();
         }
     }
-    void Update()
+    void Update()                                           //Update method is used for input only.
     {
-        if (!gameManagerObj.isGameOver)
+        if (!gameManagerObj.isGameOver)                            //Until the game is not over the player can give input                      
         {
-            if (isPlayerGrounded)
+            if (isPlayerGrounded)                                 //to feed only one input jump at a time before hitting ground.
             {
                 // Jump when the player presses the space bar
-                if (Input.GetKeyDown(KeyCode.Space) || TouchBegan())
+                if (Input.GetKeyDown(KeyCode.Space) || TouchBegan())              //Input from Keyboard as well as Touch
                 {
                     isPlayerGrounded = false;
                     audioSource.PlayOneShot(jumpSound);
-                    velocity.y = jumpVelocity;
+                    velocity.y = jumpVelocity;                                   //Initial Jump Velocity
                     isHoldingJump = true;
                 }
 
 
             }
-            if (Input.GetKeyUp(KeyCode.Space) || !TouchEnded())
+            if (Input.GetKeyUp(KeyCode.Space) || !TouchEnded())         //checking if the space key is up or Touch is off the screen.
             {
                 isHoldingJump = false;
             }
         }
-        
+
     }
 
-    private void FixedUpdate()
+    private void FixedUpdate()                                             //fixed Update is used for Movement calculation.
     {
         if (!gameManagerObj.isGameOver)
         {
-            // Increase the playerspeed over time
-            playerCurrentSpeed += playerAcceleration * Time.deltaTime;
-
-            // Calculate the playermovement along the x-axis
-            float move = playerCurrentSpeed * Time.deltaTime;
-
-            // Apply the movement to the player position
-            transform.position += new Vector3(move, 0, 0);
-
+            playerCurrentSpeed += playerAcceleration * Time.deltaTime;          // Increase the playerspeed over time
+            float move = playerCurrentSpeed * Time.deltaTime;             // Calculate the playermovement along the x-axis
+            transform.position += new Vector3(move, 0, 0);               // Apply the movement to the player position
             Vector2 playerPosition = transform.position;
             if (!isPlayerGrounded)
             {
-                if (isHoldingJump)
-                {
-                    timerForJump += Time.fixedDeltaTime;
-                    if (timerForJump >= maxTimeforJump)
-                    {
-                        isHoldingJump = false;
-                    }
-                }
-                playerPosition.y += velocity.y * Time.fixedDeltaTime;
-                if (!isHoldingJump)
-                {
-                    velocity.y += gravity * Time.fixedDeltaTime;
-                }
+                playerPosition.y += velocity.y * Time.fixedDeltaTime;              //Increment vertical position of player per frame
+                velocity.y += gravity * Time.fixedDeltaTime;                      //-ve gravity makes player velocity negative when the player reaches the top for fall
 
                 if (playerPosition.y <= groundHeight)
                 {
@@ -108,7 +91,7 @@ public class PlayerController : MonoBehaviour
             }
 
             //increase distance over time if on ground or jumping
-                distance += velocity.x * Time.fixedDeltaTime;
+            distance += velocity.x * Time.fixedDeltaTime;
 
             //only increase speed while on ground
             if (isPlayerGrounded)
